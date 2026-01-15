@@ -1,257 +1,269 @@
-﻿namespace Simulazione_partita_di_calcio2
+namespace Simulazione_partita_di_calcio2
 {
     internal class Program
     {
+        static int Somma(int[] squadra) // Calcola la potenza totale di una squadra
+        {
+            int somma = 0;
+            for (int i = 0; i < squadra.Length; i++)
+                somma += squadra[i];
+            return somma;
+        }
 
-        static void GeneraSquadra(int[] titolari, int[] panchina)
+        static void ValorizzazioneGiocatori(int[] squadra, int[] panchinari) // assegna valori casuali che vanno da 30 a 100
         {
             Random rnd = new Random();
-            int i = 0;
-            while (i < titolari.Length)
+            for (int i = 0; i < squadra.Length; i++)
             {
-                titolari[i] = rnd.Next(40, 91);
-                i++;
+                squadra[i] = rnd.Next(30, 100);
+            }
+            for (int i = 0; i < panchinari.Length; i++)
+            {
+                panchinari[i] = rnd.Next(1, 50);
             }
 
-            int j = 0;
-            while (j < panchina.Length)
+        }
+
+       
+
+        static void StampaGiocatori(int[] squadra, int[] panchinari) // Stampa la lista dei giocatori con la potenza di ogni giocatore
+        {
+            for (int i = 0; i < squadra.Length; i++)
             {
-                panchina[j] = rnd.Next(40, 86);
-                j++;
+                Console.WriteLine("Giocatore " + (i + 1) + "  Potenza: " + squadra[i]);
+            }
+            for (int i = 0; i < panchinari.Length; i++)
+            {
+                Console.WriteLine("Panchinaro " + (i + 1) + "  Potenza: " + panchinari[i]);
             }
         }
 
+        
 
-        static int CalcolaPotenza(int[] titolari)
+        static int ContaGiocatori(int[] squadra)// conta i giocatori titolari
         {
-            int totale = 0;
-            int i = 0;
-            while (i < titolari.Length)
+            int tit = 0;
+            for (int i = 0; i < squadra.Length; i++)
             {
-                totale = totale + titolari[i];
-                i++;
-            }
-            return totale;
-        }
-
-
-        static int ContaGiocatori(int[] titolari)
-        {
-            int attivi = 0;
-            int i = 0;
-            while (i < titolari.Length)
-            {
-                if (titolari[i] > 0)
+                if (squadra[i] > 0) // Un giocatore con potenza 0 è considerato espulso
                 {
-                    attivi++;
+                    tit++;
                 }
-                i++;
             }
-            return attivi;
+            return tit;
         }
+
+        // ====== MAIN ======
 
         static void Main()
         {
-            Random rnd = new Random();
-
-            int[] titA = new int[11];
-            int[] panA = new int[5];
-            int[] ammonizioniA = new int[11];
-            int golA = 0;
-            int rossiA = 0;
-            int sostA = 0;
-
-            int[] titB = new int[11];
-            int[] panB = new int[5];
-            int[] ammonizioniB = new int[11];
-            int golB = 0;
-            int rossiB = 0;
-            int sostB = 0;
+            // Squadra A
+            int[] titA = new int[11]; // Potenza titolari Squadra A
+            int[] panA = new int[5]; // Potenza panchina Squadra A
+            int[] ammonA = new int[11]; // Contatore di gialli per giocatore Squadra A
+            int golA = 0, rossiA = 0, cambiA = 0;
+            // Squadra B
+            int[] titB = new int[11]; // Potenza titolari Squadra B
+            int[] panB = new int[5]; // Potenza panchina Squadra B
+            int[] ammonB = new int[11]; // Contatore di gialli per giocatore Squadra B
+            int golB = 0, rossiB = 0, cambiB = 0;
 
             int minutoUltimoGol = 0;
+            Random rnd = new Random();
+            // --------- INIZIALIZZAZIONE ---------
 
-            GeneraSquadra(titA, panA);
-            GeneraSquadra(titB, panB);
+            Console.WriteLine("===== SQUADRA A =====");
+            ValorizzazioneGiocatori(titA, panA);
+            StampaGiocatori(titA, panA);
+            Console.WriteLine("----------------------");
+            
 
+            Console.WriteLine("\n===== SQUADRA B =====");
+            ValorizzazioneGiocatori(titB, panB);
+            
+            StampaGiocatori(titB, panB);
+            Console.WriteLine("----------------------");
+
+            // Calcolo durata partita (90 minuti + recupero da (1-5)
             int recupero = rnd.Next(1, 6);
-            int durataTotale = 90 + recupero;
+            int durata = 90 + recupero;
 
-            Console.WriteLine("--- FISCHIO D'INIZIO ---");
-            Console.WriteLine("Partita di 90m + " + recupero + "m di recupero");
-            Console.WriteLine("------------------------");
+            Console.WriteLine("\n--- FISCHIO D'INIZIO ---");
+            Console.WriteLine("========================");
 
-            int m = 1;
-            while (m <= durataTotale)
+            Console.WriteLine("Durata: 90 + " + recupero + " minuti\n");
+
+           
+
+            for (int minuto = 1; minuto <= durata; minuto++) //  simulazione minuto per minuto
             {
-                int probEvento = rnd.Next(1, 101);
-
-
-                if (probEvento <= 5)
+                
+                int evento = rnd.Next(1, 101); // Genera un numero da 1 a 100 per determinare l'evento
+                if (evento <= 70) // succede un evento
                 {
-                    int potA = CalcolaPotenza(titA);
-                    int potB = CalcolaPotenza(titB);
-                    int numA = ContaGiocatori(titA);
-                    int numB = ContaGiocatori(titB);
-
-                    if (numA > numB)
+                    
+                    if (evento <= 5) // GOL (probabilità 5%)
                     {
-                        potA = potA + 100;
-                    }
-                    else if (numB > numA)
-                    {
-                        potB = potB + 100;
-                    }
+                        int potA = Somma(titA);
+                        int potB = Somma(titB);
 
-                    int totaleMisto = potA + potB;
-                    int tiro = rnd.Next(0, totaleMisto);
-
-                    if (tiro < potA)
-                    {
-                        golA++;
-                        minutoUltimoGol = m;
-                        Console.WriteLine("Min " + m + ": GOL SQUADRA A!");
-                    }
-                    else
-                    {
-                        golB++;
-                        minutoUltimoGol = m;
-                        Console.WriteLine("Min " + m + ": GOL SQUADRA B!");
-                    }
-
-                    Console.WriteLine("    __");
-                    Console.WriteLine(" .'\".'\"'.");
-                    Console.WriteLine(":._.\"\"._.:");
-                    Console.WriteLine(":  \\__/  :");
-                    Console.WriteLine(" './  \\.'");
-                    Console.WriteLine("    \"\"");
-                }
-
-
-                else if (probEvento <= 8)
-                {
-                    int squadraScelta = rnd.Next(0, 2);
-                    int giocatoreScelto = rnd.Next(0, 11);
-
-                    if (squadraScelta == 0)
-                    {
-                        if (titA[giocatoreScelto] > 0)
+                        if (ContaGiocatori(titA) > ContaGiocatori(titB))
                         {
-                            ammonizioniA[giocatoreScelto]++;
-                            if (ammonizioniA[giocatoreScelto] == 2)
+                            potA += 100;
+                        }
+                        if (ContaGiocatori(titB) > ContaGiocatori(titA)) 
+                        {
+                            potB += 100;
+                        }
+
+                        int tiro = rnd.Next(0, potA + potB); // gol basato sulla potenza totale
+
+                        if (tiro < potA)
+                        {
+                            golA++;
+                            minutoUltimoGol = minuto;
+                            Console.WriteLine("Min " + minuto + ": GOL SQUADRA A");
+                        }
+                        else
+                        {
+                            golB++;
+                            minutoUltimoGol = minuto;
+                            Console.WriteLine("Min " + minuto + ": GOL SQUADRA B");
+                        }
+                        Console.WriteLine("    __");
+                        Console.WriteLine(" .'\".'\"'.");
+                        Console.WriteLine(":._.\"\"._.:");
+                        Console.WriteLine(":  \\__/  :");
+                        Console.WriteLine(" './  \\.'");
+                        Console.WriteLine("    \"\"");
+
+                    }
+
+                    // CARTELLINO (Giallo / Rosso)(probabilità dal 6 % all'8%)
+                    else if (evento <= 8)
+                    {
+                        int squadra = rnd.Next(0, 2);
+                        int g = rnd.Next(0, 11);
+
+                        if (squadra == 0 && titA[g] > 0)
+                        {
+                            ammonA[g]++;
+                            if (ammonA[g] == 2)
                             {
-                                titA[giocatoreScelto] = 0;
+                                titA[g] = 0;
                                 rossiA++;
-                                Console.WriteLine("Min " + m + ": ROSSO (A) - Giocatore " + (giocatoreScelto + 1) + " espulso!");
+                                Console.WriteLine("Min " + minuto + ": ROSSO Squadra A (Giocatore " + (g + 1) + ")");
                             }
                             else
                             {
-                                titA[giocatoreScelto] = titA[giocatoreScelto] - 5;
-                                Console.WriteLine("Min " + m + ": Giallo per Squadra A");
+                                titA[g] -= 5;
+                                Console.WriteLine("Min " + minuto + ": Giallo Squadra A");
                             }
+                            
                         }
-                        else
+                        else if (squadra == 1 && titB[g] > 0)
                         {
-                            Console.WriteLine("Min " + m + ": Non è successo niente");
-                        }
-                    }
-                    else
-                    {
-                        if (titB[giocatoreScelto] > 0)
-                        {
-                            ammonizioniB[giocatoreScelto]++;
-                            if (ammonizioniB[giocatoreScelto] == 2)
+                            ammonB[g]++;
+                            if (ammonB[g] == 2)
                             {
-                                titB[giocatoreScelto] = 0;
+                                titB[g] = 0;
                                 rossiB++;
-                                Console.WriteLine("Min " + m + ": ROSSO (B) - Giocatore " + (giocatoreScelto + 1) + " espulso!");
+                                Console.WriteLine("Min " + minuto + ": ROSSO Squadra B (Giocatore " + (g + 1) + ")");
                             }
                             else
                             {
-                                titB[giocatoreScelto] = titB[giocatoreScelto] - 5;
-                                Console.WriteLine("Min " + m + ": Giallo per Squadra B");
+                                titB[g] -= 5;
+                                Console.WriteLine("Min " + minuto + ": Giallo Squadra B");
                             }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Min " + m + ": Non è successo niente");
+                            
                         }
                     }
-                }
 
-
-                else if (probEvento <= 12)
-                {
-                    int chiCambia = rnd.Next(0, 2);
-                    if (chiCambia == 0)
+                    // CAMBIO
+                    else if (evento <= 12)
                     {
-                        if (sostA < 5)
+                        int squadra = rnd.Next(0, 2);
+
+                        if (squadra == 0 && cambiA < 5)
                         {
                             int peggiore = 0;
-                            int migliore = 0;
-                            int j = 0;
-                            while (j < 11)
+                            for (int i = 1; i < 11; i++)
                             {
-                                if (titA[j] < titA[peggiore])
+                                if (titA[i] > 0 && titA[i] < titA[peggiore])
                                 {
-                                    if (titA[j] > 0)
-                                    {
-                                        peggiore = j;
-                                    }
+                                    peggiore = i;
                                 }
-                                j++;
                             }
-                            int k = 0;
-                            while (k < 5)
+                            int migliore = 0;
+                            for (int i = 1; i < 5; i++)
                             {
-                                if (panA[k] > panA[migliore])
+                                if (panA[i] > panA[migliore])
                                 {
-                                    migliore = k;
+                                    migliore = i;
                                 }
-                                k++;
                             }
                             int temp = titA[peggiore];
                             titA[peggiore] = panA[migliore];
                             panA[migliore] = temp;
-                            sostA++;
-                            Console.WriteLine("Min " + m + ": Cambio Tattico A (" + sostA + "/5)");
+                            cambiA++;
+
+                            Console.WriteLine("Min " + minuto + ": Cambio Squadra A (" + cambiA + "/5)");
+                            
                         }
-                        else
+                        else if (squadra == 1 && cambiB < 5)
                         {
-                            Console.WriteLine("Min " + m + ": Non è successo niente");
+                            int peggiore = 0;
+                            for (int i = 1; i < 11; i++)
+                            {
+                                if (titB[i] > 0 && titB[i] < titB[peggiore])
+                                {
+                                    peggiore = i;
+                                }
+                            }
+
+                            int migliore = 0;
+                            for (int i = 1; i < 5; i++)
+                            {
+                                if (panB[i] > panB[migliore])
+                                {
+                                    migliore = i;
+                                }
+                            }
+                            int temp = titB[peggiore];
+                            titB[peggiore] = panB[migliore];
+                            panB[migliore] = temp;
+                            cambiB++;
+
+                            Console.WriteLine("Min " + minuto + ": Cambio Squadra B (" + cambiB + "/5)");
+                            
                         }
-                    }
-                    else
-                    {
-
-                        Console.WriteLine("Min " + m + ": Non è successo niente");
-                    }
+                    }                    
                 }
-
-
                 else
                 {
-                    Console.WriteLine("Min " + m + ": Non è successo niente");
+                    Console.WriteLine("Min " + minuto + ": Non è successo niente");
+
                 }
 
-                m++;
             }
 
+            // --------- RISULTATO FINALE ---------
 
-            Console.WriteLine("\n==============================");
-            Console.WriteLine("FISCHIO FINALE");
-            Console.WriteLine("Risultato: A " + golA + " - " + golB + " B");
-            if (minutoUltimoGol > 0)
+            Console.WriteLine("\n--- FISCHIO FINALE ---");
+            Console.WriteLine("RISULTATO: A " + golA + " - " + golB + " B");
+
+            if (minutoUltimoGol > 0) 
             {
-                Console.WriteLine("Minuto dell'ultimo gol: " + minutoUltimoGol + "'");
+                Console.WriteLine("Ultimo gol al minuto: " + minutoUltimoGol);
             }
-            else
+            else 
             {
-                Console.WriteLine("Nessun gol segnato.");
+                Console.WriteLine("Nessun gol segnato");
             }
-            Console.WriteLine("Potenza Finale A: " + CalcolaPotenza(titA));
-            Console.WriteLine("Potenza Finale B: " + CalcolaPotenza(titB));
-            Console.WriteLine("==============================");
+            Console.WriteLine("Potenza finale A: " + Somma(titA));
+            Console.WriteLine("Potenza finale B: " + Somma(titB));
         }
+
     }
 
 }
